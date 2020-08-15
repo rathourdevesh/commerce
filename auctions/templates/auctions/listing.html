@@ -1,0 +1,69 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <hr>
+    <div>
+        <img src="/media/{{ item.Image }}" alt="Image"><br>
+        <h5>{{ item.name }}</h5><br>
+        Initial Bid : {{ item.bid }}<br>
+        Current Price : {{ item.bidPrice }}<br>
+        Created by : {{ item.User.username }} <br>  On : {{ item.time }} <br>
+        Description : {{ item.description }} <br>
+        Category : {{ item.category }}
+    </div>
+    
+    Bids:
+    <ul>
+        {% for bid in bids %}
+        <li>{{ bid.User.username }} : {{ bid.amount }} : {{ item.time }}</li>
+        {% endfor %}
+    </ul>
+    {% if user.is_authenticated %}
+    {% if user.username == item.User.username %}
+    <form action="{% url 'itemListing' item.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" name="closing">Close the Bid</button>
+    </form> 
+    {% else %}
+    {% if item.status == 'Closed'%}
+    {% if user.username == item.bidWinner %}
+    <strong>You Have Won the Bid!!</strong><br>
+    {% else %}
+    <strong>Bid Closed</strong><br>
+    {% endif %}
+    {% else %}
+    <form action="{% url 'itemListing' item.id %}" method="post">
+        {% csrf_token %}
+        Bid:<input type="number" min="{{ item.bidPrice }}" id="bidAmt" name="bidAmt">
+        <button type="submit" name="bidding">Submit Bid</button>
+    </form>  
+    {% endif %}
+    {% endif %}
+    {% endif %}
+
+    Comments:
+    <ul>
+        {% for comment in comments %}
+        <li><strong> {{ comment.User.username }} </strong> wrote:<strong> {{ comment.Comment }} </strong> : on  {{ comment.time }}</li>
+        {% endfor %}
+    </ul>
+    {% if user.is_authenticated %}
+    <form action="{% url 'itemListing' item.id %}" method="post">
+        {% csrf_token %}
+        Comment:<input type="text" id="newComment" name="newComment">
+        <button type="submit" name="commenting">Save Comment</button>
+    </form>  
+    {% endif %}
+    {% if watchtag == 1 %}
+    <form action="{% url 'itemListing' item.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" name="RemoveWatchlist">Remove from Watchlist</button>
+    </form>  
+    {% else %}
+    <form action="{% url 'itemListing' item.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" name="AddWatchlist">Add to Watchlist</button>
+    </form> 
+    {% endif %}
+{% endblock %}

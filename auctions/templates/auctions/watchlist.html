@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <hr>
+    {% for wli in wl %}
+    <div>
+        <img src="/media/{{ wli.item.Image }}" alt="Image"><br>
+        <a href="{% url 'itemListing' wli.item.id %}">{{ wli.item.name }}</a><br>
+        {{ wli.item.description }}<br>
+        Current Price : {{ wli.item.bidPrice }}
+    </div>
+    {% endfor %}
+{% endblock %}
